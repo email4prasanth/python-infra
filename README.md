@@ -12,11 +12,35 @@ python check_credentials.py
 ```
 - Create the following py files
 ```sh
+# Configuration files
 config/__init__.py
 config/dev.py
 config/prod.py
-vpc.py
-main.py
+# Destruction modules
+destroy/__init__.py
+destroy/destruct_ec2server1.py
+destroy/destruct_ec2server2.py
+destroy/destruct_network.py
+destroy/destruct_vpc.py
+# Infrastructure creation modules
+infra/__init__.py
+infra/infra_ec2server1.py
+infra/infra_ec2server2.py
+infra/infra_network.py
+infra/infra_vpc.py
+# Executable scripts
+scripts/deploy_ec2server1.py
+scripts/deploy_ec2server2.py
+scripts/deploy_network.py
+scripts/deploy_vpc.py
+scripts/destory_ec2server1.py
+scripts/destory_ec2server2.py
+scripts/destroy_network.py
+scripts/destroy_vpc.py
+# Shared utilities
+utils/ __init__.py
+utils/ path_utils.py      # Utility for path resolution
+utils/ aws_utils.py
 ```
 ### How to create and destroy ec2 server-1
 ```sh
