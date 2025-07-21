@@ -12,7 +12,7 @@ setup_paths()
 
 import argparse
 from config import load_config
-from destroy.destroy_network import destroy_network_infrastructure
+from destroy.destruct_network import destroy_network_infrastructure
 
 def main():
     parser = argparse.ArgumentParser(description='Destroy AWS network infrastructure')

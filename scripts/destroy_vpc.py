@@ -12,7 +12,7 @@ setup_paths()
 
 import argparse
 from config import load_config
-from destroy.destroy_vpc import destroy_vpc
+from destroy.destruct_vpc import destroy_vpc
 
 def main():
     parser = argparse.ArgumentParser(description='Destroy AWS VPC for py-infra project')
