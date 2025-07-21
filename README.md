@@ -21,15 +21,19 @@ main.py
 ### How to Use create and destroy vpc
 ```sh
 # Create VPC in dev environment
-python infra_vpc_main.py --env dev
-python destroy_vpc_main.py --env dev
+cd scripts
+python deploy_vpc.py --env dev
+python destroy_vpc.py --env dev
 
 # Create VPC in prod environment
-python infra_vpc_main.py --env prod
-python destroy_vpc_main.py --env prod
+python deploy_vpc.py --env prod
+python destroy_vpc.py --env prod
 ```
 ### How to Use create and destroy vpc and network
 ```sh
-python infra_network_main.py --env dev
-python destroy_network_main.py --env dev
+python deploy_network.py --env dev
+python destroy_network.py --env dev
+
+python deploy_network.py --env prod
+python destroy_network.py --env prod
 ```

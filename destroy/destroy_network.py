@@ -22,7 +22,7 @@ def destroy_network_infrastructure(env_config, environment):
         
         # Generate resource names dynamically
         vpc_name = f"py-infra-{environment}-vpc"
-        subnet_name = f"py-infra-{environment}-public-subnet"
+        subnet_base_name = f"py-infra-{environment}-public-subnet"
         igw_name = f"py-infra-{environment}-igw"
         rt_name = f"py-infra-{environment}-public-rt"
         
@@ -80,12 +80,14 @@ def destroy_network_infrastructure(env_config, environment):
         # 3. Find and delete subnets
         subnets = ec2.describe_subnets(Filters=[
             {'Name': 'vpc-id', 'Values': [vpc_id]},
-            {'Name': 'tag:Name', 'Values': [subnet_name]},
-            {'Name': 'tag:Project', 'Values': ['py-infra']}
+            {'Name': 'tag:Project', 'Values': ['py-infra']},
+            {'Name': 'tag:Environment', 'Values': [environment]},
+            {'Name': 'tag:Name', 'Values': [f"{subnet_base_name}-*"]}
         ])['Subnets']
         
         for subnet in subnets:
             subnet_id = subnet['SubnetId']
+            subnet_name = next(tag['Value'] for tag in subnet['Tags'] if tag['Key'] == 'Name')
             ec2.delete_subnet(SubnetId=subnet_id)
             print(f"✅ Deleted subnet: {subnet_name} ({subnet_id})")
         

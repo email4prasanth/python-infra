@@ -1,10 +1,11 @@
+# destroy/vpc.py
 import boto3
 import time
 from botocore.exceptions import ClientError
 
 def destroy_vpc(env_config, environment):
     """
-    Destroys the VPC created for the specified environment
+    Destroys the VPC for the specified environment
     """
     try:
         # Create session with specified profile
@@ -32,7 +33,7 @@ def destroy_vpc(env_config, environment):
         ec2.delete_vpc(VpcId=vpc_id)
         print(f"🗑️ VPC deletion initiated: {vpc_name}")
         
-        # Wait for VPC to be deleted (using custom polling)
+        # Wait for VPC to be deleted
         print("⏳ Waiting for VPC to be deleted...", end='', flush=True)
         start_time = time.time()
         timeout = 300  # 5 minutes timeout
@@ -61,9 +62,9 @@ def destroy_vpc(env_config, environment):
             print(f"✅ VPC already deleted: {vpc_name}")
             return True
             
-        print(f"\n❌ AWS API Error ({error_code}): {error_msg}")
+        print(f"❌ AWS API Error ({error_code}): {error_msg}")
         return False
         
     except Exception as e:
-        print(f"\n❌ Unexpected error: {str(e)}")
+        print(f"❌ Unexpected error: {str(e)}")
         return False

@@ -1,4 +1,4 @@
-# Central configuration loader
+# config/__init__.py
 import importlib
 
 def load_config(env):
