@@ -18,14 +18,18 @@ config/prod.py
 vpc.py
 main.py
 ```
-### How to Use create and destroy
+### How to Use create and destroy vpc
 ```sh
 # Create VPC in dev environment
-python infra_main.py --env dev
-python destroy_main.py --env dev
+python infra_vpc_main.py --env dev
+python destroy_vpc_main.py --env dev
 
 # Create VPC in prod environment
-python infra_main.py --env prod
-python destroy_main.py --env prod
+python infra_vpc_main.py --env prod
+python destroy_vpc_main.py --env prod
 ```
-
+### How to Use create and destroy vpc and network
+```sh
+python infra_network_main.py --env dev
+python destroy_network_main.py --env dev
+```
