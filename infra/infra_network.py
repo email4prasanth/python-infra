@@ -1,10 +1,3 @@
-"""
-Network Infrastructure Creation
-- Public Subnet-2
-- Internet Gateway (IGW)
-- Route Table with public routes
-"""
-
 import boto3
 from botocore.exceptions import ClientError
 
@@ -16,6 +9,7 @@ def create_network_infrastructure(env_config, environment, vpc_id):
         # Generate resource names
         igw_name = f"py-infra-{environment}-igw"
         rt_name = f"py-infra-{environment}-public-rt"
+        sg_name = f"py-infra-{environment}-sg"
         
         subnet_ids = []
         
@@ -86,17 +80,75 @@ def create_network_infrastructure(env_config, environment, vpc_id):
             
             subnet_ids.append(subnet_id)
         
+        # Create security group
+        sg = ec2.create_security_group(
+            GroupName=sg_name,
+            Description=f"Security group for {environment} environment",
+            VpcId=vpc_id
+        )
+        sg_id = sg['GroupId']
+        
+        # Define rules based on environment
+        if environment == "dev":
+            # Allow all traffic for dev
+            ec2.authorize_security_group_ingress(
+                GroupId=sg_id,
+                IpPermissions=[
+                    {
+                        'IpProtocol': '-1',
+                        'FromPort': -1,
+                        'ToPort': -1,
+                        'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                    }
+                ]
+            )
+        else:  # prod
+            # Allow only SSH, HTTP, HTTPS
+            ec2.authorize_security_group_ingress(
+                GroupId=sg_id,
+                IpPermissions=[
+                    {
+                        'IpProtocol': 'tcp',
+                        'FromPort': 22,
+                        'ToPort': 22,
+                        'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                    },
+                    {
+                        'IpProtocol': 'tcp',
+                        'FromPort': 80,
+                        'ToPort': 80,
+                        'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                    },
+                    {
+                        'IpProtocol': 'tcp',
+                        'FromPort': 443,
+                        'ToPort': 443,
+                        'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                    }
+                ]
+            )
+        
+        # Add tags to security group
+        ec2.create_tags(
+            Resources=[sg_id],
+            Tags=[
+                {'Key': 'Name', 'Value': sg_name},
+                {'Key': 'Environment', 'Value': environment},
+                {'Key': 'Project', 'Value': 'py-infra'}
+            ]
+        )
+        
+        print(f"✅ Security Group created: {sg_name} ({sg_id})")
+        
         return {
             'subnet_ids': subnet_ids,
             'igw_id': igw_id,
-            'route_table_id': rt_id
+            'route_table_id': rt_id,
+            'security_group_id': sg_id
         }
         
     except ClientError as e:
         error_code = e.response['Error']['Code']
         error_msg = e.response['Error']['Message']
         print(f"❌ AWS API Error ({error_code}): {error_msg}")
-        raise
-    except Exception as e:
-        print(f"❌ Unexpected error: {str(e)}")
         raise

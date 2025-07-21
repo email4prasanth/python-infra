@@ -18,22 +18,19 @@ config/prod.py
 vpc.py
 main.py
 ```
-### How to Use create and destroy vpc
+### How to create and destroy ec2 server-1
 ```sh
-# Create VPC in dev environment
-cd scripts
-python deploy_vpc.py --env dev
-python destroy_vpc.py --env dev
-
-# Create VPC in prod environment
-python deploy_vpc.py --env prod
-python destroy_vpc.py --env prod
+# Create ec2 ubuntu server in dev environment
+python scripts/deploy_network.py -e dev
+python scripts/deploy_ec2server1.py -e dev
+python scripts/destroy_ec2server1.py -e dev
+python scripts/destroy_network.py -e dev
 ```
-### How to Use create and destroy vpc and network
+### How to Create ec2 in prod environment
 ```sh
-python deploy_network.py --env dev
-python destroy_network.py --env dev
-
-python deploy_network.py --env prod
-python destroy_network.py --env prod
+# Create ec2 linux server in prod environment
+python scripts/deploy_network.py -e prod
+python scripts/deploy_ec2server2.py -e prod
+python scripts/destroy_ec2server2.py -e prod
+ python scripts/destroy_network.py -e prod
 ```

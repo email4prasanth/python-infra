@@ -3,8 +3,9 @@ Network Infrastructure Destruction
 Destroys resources in reverse order of creation:
 1. Route Table
 2. Internet Gateway
-3. Subnet
-4. VPC
+3. Subnets
+4. Security Group
+5. VPC
 """
 
 import boto3
@@ -25,6 +26,7 @@ def destroy_network_infrastructure(env_config, environment):
         subnet_base_name = f"py-infra-{environment}-public-subnet"
         igw_name = f"py-infra-{environment}-igw"
         rt_name = f"py-infra-{environment}-public-rt"
+        sg_name = f"py-infra-{environment}-sg"
         
         # Find VPC by name tag
         vpcs = ec2.describe_vpcs(Filters=[
@@ -91,7 +93,28 @@ def destroy_network_infrastructure(env_config, environment):
             ec2.delete_subnet(SubnetId=subnet_id)
             print(f"✅ Deleted subnet: {subnet_name} ({subnet_id})")
         
-        # 4. Delete VPC
+        # 4. Find and delete security group
+        try:
+            sgs = ec2.describe_security_groups(Filters=[
+                {'Name': 'group-name', 'Values': [sg_name]},
+                {'Name': 'vpc-id', 'Values': [vpc_id]},
+                {'Name': 'tag:Project', 'Values': ['py-infra']}
+            ])['SecurityGroups']
+            
+            if sgs:
+                sg_id = sgs[0]['GroupId']
+                ec2.delete_security_group(GroupId=sg_id)
+                print(f"✅ Deleted security group: {sg_name} ({sg_id})")
+            else:
+                print(f"ℹ️ Security group not found: {sg_name}")
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'DependencyViolation':
+                print(f"⚠️ Security group {sg_name} has dependencies and cannot be deleted yet")
+                print("  It will be automatically deleted when VPC is destroyed")
+            else:
+                raise
+        
+        # 5. Delete VPC
         ec2.delete_vpc(VpcId=vpc_id)
         print(f"🗑️ VPC deletion initiated: {vpc_name}")
         
