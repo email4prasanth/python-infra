@@ -7,6 +7,7 @@ from aws_cdk import (
 from constructs import Construct
 import importlib
 from types import SimpleNamespace
+from .security_group import SecurityGroups
 
 class InfrastructureStack(Stack):
     def load_config(self, env: str):
@@ -20,7 +21,7 @@ class InfrastructureStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
         config = self.load_config(environment)
         prefix = f"testpy-{environment}"
-    
+        """Create resources using L1 construct"""
         # Create VPC
         vpc = ec2.CfnVPC(
             self,
@@ -78,7 +79,12 @@ class InfrastructureStack(Stack):
             subnet_id=subnet.ref,
             route_table_id=route_table.ref
         )
+
+        # Create Security Groups
+        security_groups = SecurityGroups(self, vpc, environment, config)
         
         # Output VPC ID
         CfnOutput(self, "VpcId", value=vpc.ref)
         CfnOutput(self, "PublicSubnetId", value=subnet.ref)
+        # CfnOutput(self, "WebSecurityGroupId", value=security_groups.web_sg.ref)
+        CfnOutput(self, "WebSecurityGroupId", value=security_groups.web_sg.attr_group_id)
