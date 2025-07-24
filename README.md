@@ -17,12 +17,8 @@ mkdir infrastructure
 New-Item infrastructure\config\__init__.py -ItemType File
 New-Item infrastructure\config\dev.py -ItemType File
 New-Item infrastructure\config\prod.py -ItemType File
-```
-### python infra creation
-```sh
 cd .\infrastructure\
-.\.venv\Scripts\Activate.ps1
-cdk bootstrap aws://180294218712/us-east-1 --profile tut
+.\.venv\Scripts\Activate.ps1 (intial requirement)
 cdk bootstrap aws://180294218712/us-east-1 --profile tut
     # # The above will infulence following services
     # AWS::CloudFormation::Stack (1)
@@ -43,7 +39,24 @@ aws s3 ls --profile tut --region us-east-1
 .\z-delete-cdk-buckets.ps1
 aws s3 ls --profile tut --region us-east-1
 ```
-
+### usefull links
+```sh
 --------lambda and api------------
 https://www.youtube.com/watch?v=o3s4VqlMsT8
 https://docs.aws.amazon.com/cdk/api/v2/python/
+```
+
+### python infra creation and testing after a git pull
+- When the code is pushed to the git repo the venv and cdk.out are ignored.
+- After git pull is taken run the following commands where venv does not comes into picture
+```sh
+cd .\infrastructure\
+cdk bootstrap aws://180294218712/us-east-1 --profile tut
+cdk deploy --profile tut -c env=dev
+cdk deploy --profile tut -c env=dev (No duplicates are allowed)
+cdk destroy --profile tut -c env=dev --force
+aws cloudformation delete-stack --stack-name CDKToolkit --profile tut
+cd ..
+.\z-delete-cdk-buckets.ps1
+aws s3 ls --profile tut --region us-east-1
+```
