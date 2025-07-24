@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-import os
-
 import aws_cdk as cdk
-
 from infrastructure.vpc_stack import VPCStack
 from infrastructure.security_group import SecurityGroupStack
 
-
 app = cdk.App()
+
+# Get environment from context (default: dev)
 env_name = app.node.try_get_context("env") or "dev"
 
 # Create VPC stack
 vpc_stack = VPCStack(
-    app, 
+    app,
     f"VPCStack-{env_name}",
     environment=env_name,
     env=cdk.Environment(account='180294218712', region='us-east-1')
-    )
+)
+
 # Create Security Group stack
 sg_stack = SecurityGroupStack(
     app,

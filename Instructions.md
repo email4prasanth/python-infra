@@ -20,18 +20,25 @@ New-Item infrastructure\config\prod.py -ItemType File
 cd .\infrastructure\
 .\.venv\Scripts\Activate.ps1 (intial requirement)
 cdk bootstrap aws://180294218712/us-east-1 --profile tut
-    # # The above will infulence following services
-    # AWS::CloudFormation::Stack (1)
-    # AWS::ECR::Repository (1)
-    # AWS::IAM::Role (6)
-    # AWS::IAM::Policy ()
-    # AWS::SSM::Parameter (1)
+        # CDKToolkit: creating CloudFormation changeset...
+        #  1/12 | AWS::SSM::Parameter        
+        #  2/12 | AWS::ECR::Repository       
+        #  3/12 | AWS::S3::Bucket            
+        #  4/12 | AWS::S3::BucketPolicy      
+        #  5/12 | AWS::IAM::Role             
+        #  6/12 | AWS::IAM::Role             
+        #  7/12 | AWS::IAM::Role             
+        #  8/12 | AWS::IAM::Role             
+        #  9/12 | AWS::IAM::Policy           
+        # 10/12 | AWS::IAM::Policy           
+        # 11/12 | AWS::IAM::Role             
+        # 12/12 | AWS::CloudFormation::Stack 
 pip install -r requirements.txt
 python -m pip show aws-cdk-lib
 python -m pip show constructs
 cdk synth -c env=dev --profile tut --region us-east-1
-cdk deploy --profile tut -c env=dev
-cdk destroy --profile tut -c env=dev --force
+cdk deploy --all --profile tut -c env=dev
+cdk destroy --all --profile tut -c env=dev --force
 aws cloudformation delete-stack --stack-name CDKToolkit --profile tut
 deactivate
 cd ..
@@ -52,9 +59,20 @@ https://docs.aws.amazon.com/cdk/api/v2/python/
 ```sh
 cd .\infrastructure\
 cdk bootstrap aws://180294218712/us-east-1 --profile tut
-cdk deploy --profile tut -c env=dev
-cdk deploy --profile tut -c env=dev (No duplicates are allowed)
-cdk destroy --profile tut -c env=dev --force
+```
+- Deployment Process
+```sh
+cdk deploy --all --profile tut -c env=dev
+# If You Want to Deploy Only One Stack
+# Deploy only VPC stack
+cdk deploy VPCStack-dev --profile tut -c env=dev
+
+# Deploy only Security Group stack (after VPC exists)
+cdk deploy SecurityGroupStack-dev --profile tut -c env=dev
+```
+```sh
+cdk deploy --all --profile tut -c env=dev (No duplicates are allowed)
+cdk destroy --all --profile tut -c env=dev --force
 aws cloudformation delete-stack --stack-name CDKToolkit --profile tut
 cd ..
 .\z-delete-cdk-buckets.ps1
