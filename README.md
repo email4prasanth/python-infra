@@ -12,15 +12,6 @@ npm install -g aws-cdk
 cdk --version
 # Install python
 python --version
-cdk bootstrap aws://180294218712/us-east-1 --profile tut
-```
-- The above will infulence following services
-```sh
-AWS::CloudFormation::Stack (1)
-AWS::ECR::Repository (1)
-AWS::IAM::Role (6)
-AWS::IAM::Policy ()
-AWS::SSM::Parameter (1)
 # Create folder structure
 mkdir infrastructure
 New-Item infrastructure\config\__init__.py -ItemType File
@@ -32,6 +23,13 @@ New-Item infrastructure\config\prod.py -ItemType File
 cd .\infrastructure\
 .\.venv\Scripts\Activate.ps1
 cdk bootstrap aws://180294218712/us-east-1 --profile tut
+cdk bootstrap aws://180294218712/us-east-1 --profile tut
+    # # The above will infulence following services
+    # AWS::CloudFormation::Stack (1)
+    # AWS::ECR::Repository (1)
+    # AWS::IAM::Role (6)
+    # AWS::IAM::Policy ()
+    # AWS::SSM::Parameter (1)
 pip install -r requirements.txt
 python -m pip show aws-cdk-lib
 python -m pip show constructs
