@@ -64,27 +64,33 @@ class VPCStack(Stack):
             gateway_id=self.igw.ref
         )
         
-        # Create Public Subnet
+        # Create Public Subnets
         # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/CfnSubnet.html
-        self.public_subnet = ec2.CfnSubnet(
-            self,
-            "PublicSubnet",
-            vpc_id=self.vpc.ref,
-            cidr_block=config.PUBLIC_SUBNET_CIDR,
-            availability_zone=config.AVAILABILITY_ZONE,
-            tags=[{"key": "Name", "value": f"{prefix}-PublicSubnet1"}]
-        )
+        self.public_subnets = []
+        for i, (subnet_cidr, az) in enumerate(zip(config.PUBLIC_SUBNET_CIDRS, config.AVAILABILITY_ZONES)):
+            subnet = ec2.CfnSubnet(
+                self,
+                f"PublicSubnet{i+1}",
+                vpc_id=self.vpc.ref,
+                cidr_block=subnet_cidr,
+                availability_zone=az,
+                tags=[{"key": "Name", "value": f"{prefix}-PublicSubnet{i+1}"}]
+            )
+            self.public_subnets.append(subnet)
         
         # Associate subnet with route table
-        # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/CfnSubnetRouteTableAssociation.html
+        # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/CfnSubnetRouteTableAssociation.html        
         ec2.CfnSubnetRouteTableAssociation(
             self,
-            "SubnetRouteAssoc",
-            subnet_id=self.public_subnet.ref,
+            f"SubnetRouteAssoc{i+1}",
+            subnet_id=subnet.ref,
             route_table_id=self.route_table.ref
         )
 
         # Output VPC ID
         CfnOutput(self, "VpcId", value=self.vpc.ref)
-        CfnOutput(self, "PublicSubnetId", value=self.public_subnet.ref)
+        # Output Subnet IDs
+        for i, subnet in enumerate(self.public_subnets):
+            CfnOutput(self, f"PublicSubnetId{i+1}", value=subnet.ref)
+        
         CfnOutput(self, "RouteTableId", value=self.route_table.ref)

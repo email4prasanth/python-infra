@@ -62,7 +62,7 @@ cdk bootstrap aws://180294218712/us-east-1 --profile tut
 ```
 - Deployment Process
 ```sh
-cdk deploy --all --profile tut -c env=dev
+cdk deploy --all --profile tut -c env=dev --require-approval never
 # If You Want to Deploy Only One Stack
 # Deploy only VPC stack
 cdk deploy VPCStack-dev --profile tut -c env=dev
