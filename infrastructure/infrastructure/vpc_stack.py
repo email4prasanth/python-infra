@@ -74,18 +74,20 @@ class VPCStack(Stack):
                 vpc_id=self.vpc.ref,
                 cidr_block=subnet_cidr,
                 availability_zone=az,
+                map_public_ip_on_launch=True,
                 tags=[{"key": "Name", "value": f"{prefix}-PublicSubnet{i+1}"}]
             )
             self.public_subnets.append(subnet)
+
         
-        # Associate subnet with route table
-        # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/CfnSubnetRouteTableAssociation.html        
-        ec2.CfnSubnetRouteTableAssociation(
-            self,
-            f"SubnetRouteAssoc{i+1}",
-            subnet_id=subnet.ref,
-            route_table_id=self.route_table.ref
-        )
+            # Associate subnet with route table
+            # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/CfnSubnetRouteTableAssociation.html        
+            ec2.CfnSubnetRouteTableAssociation(
+                self,
+                f"SubnetRouteAssoc{i+1}",
+                subnet_id=subnet.ref,
+                route_table_id=self.route_table.ref
+            )
 
         # Output VPC ID
         CfnOutput(self, "VpcId", value=self.vpc.ref)

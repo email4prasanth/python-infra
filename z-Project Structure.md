@@ -1,12 +1,14 @@
 infrastructure/
-└── .venv/
 └── infrastructure/
     ├── config/
     │   ├── __init__.py
     │   ├── dev.py
     │   └── prod.py
     ├── __init__.py
-    └── infrastructure_stack.py
+    └── main.py
+    └── security_group.py
+    └── vpc_stack.py
+    └── compute_stack.py
 └── .tests/
 ├── .gitignore
 ├── app.py

@@ -6,5 +6,5 @@ AVAILABILITY_ZONES = ["us-east-1a", "us-east-1b"]
 PROFILE_NAME = "tut"
 INSTANCE_TYPE = "t2.micro"
 KEY_NAME = "DevOpsKey"
-SERVER1_AMI = "ami-0a7d80731ae1b2435"  # Ubuntu Server 22.04 LTS
+SERVER1_AMI = "ami-020cba7c55df1f615"  # Ubuntu Server 24.04 LTS
 SERVER2_AMI = "ami-050fd9796aa387c0d"  # Amazon Linux 2023
