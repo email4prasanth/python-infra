@@ -1,16 +1,18 @@
 ### python-infra Intial setup
-- The main aim to create aws infra strcture s3.
-- check the version `python --version`, if require install and add in the envrionment varibales.
-- Install boto3
+- The main aim to create aws infra strcture ec2.
+
+#### Phase-1 deploying infra without using CICD
+- Prerequisite:
+- AWS Account
+- User in IAM, set the credentials in profile and config.
+- check AWS CLI, node, AWS CDK, Python --version, if require install and add in the envrionment varibiales.
+- Install boto3 
 ```sh
-# Install AWS CLI and configure
 aws --version
-# nstall AWS CDK using node
 node --version
 npm --version
 npm install -g aws-cdk
 cdk --version
-# Install python
 python --version
 # Create folder structure
 mkdir infrastructure
@@ -56,25 +58,49 @@ https://docs.aws.amazon.com/cdk/api/v2/python/
 ### python infra creation and testing after a git pull
 - When the code is pushed to the git repo the venv and cdk.out are ignored.
 - After git pull is taken run the following commands where venv does not comes into picture
+- Deployment Process
 ```sh
 cd .\infrastructure\
 cdk bootstrap aws://180294218712/us-east-1 --profile tut
-```
-- Deployment Process
-```sh
 cdk deploy --all --profile tut -c env=dev --require-approval never
-# If You Want to Deploy Only One Stack
-# Deploy only VPC stack
-cdk deploy VPCStack-dev --profile tut -c env=dev
-
-# Deploy only Security Group stack (after VPC exists)
-cdk deploy SecurityGroupStack-dev --profile tut -c env=dev
-```
-```sh
+        # # If You Want to Deploy Only One Stack
+        # # Deploy only VPC stack
+        # cdk deploy VPCStack-dev --profile tut -c env=dev
+        # # Deploy only Security Group stack (after VPC exists)
+        # cdk deploy SecurityGroupStack-dev --profile tut -c env=dev
 cdk deploy --all --profile tut -c env=dev (No duplicates are allowed)
 cdk destroy --all --profile tut -c env=dev --force
 aws cloudformation delete-stack --stack-name CDKToolkit --profile tut
 cd ..
 .\z-delete-cdk-buckets.ps1
 aws s3 ls --profile tut --region us-east-1
+```
+#### Phase-2 deploying infra using CICD
+- Prerequisite:
+- Update the AWS Credentials in CICD Repository secrets
+- Remove the aws profile related details if any.
+- Powershell realated files should be replaced with bash code.
+- specify the environment
+- Create infra
+```sh
+name: Set up Python
+name: Set up Node.js
+name: Instal AWS CDK
+name: Configure AWS Credentials
+name: Install Python dependencies
+name: Bootstrap CDK
+name: CDK Synth
+name: CDK Deploy
+```
+- Destroy Infra
+```sh
+Checkout Repository
+Set up Python
+Set up Node.js
+Instal AWS CDK
+Configure AWS Credentials
+Install Python dependencies
+CDK Destroy Infrastructure
+Destroy CDK Bootstrap Stack
+Remove S3 bucket
 ```
