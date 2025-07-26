@@ -2,11 +2,8 @@
 
 set -euo pipefail
 
-PROFILE="tut"
-REGION="us-east-1"
-
 # Get all bucket names that start with "cdk-"
-buckets=$(aws s3api list-buckets --query "Buckets[?starts_with(Name, 'cdk-')].Name" --output text --profile "$PROFILE" --region "$REGION")
+buckets=$(aws s3api list-buckets --query "Buckets[?starts_with(Name, 'cdk-')].Name" --output text)
 
 for bucket in $buckets; do
     echo "Processing bucket: $bucket"
@@ -15,13 +12,11 @@ for bucket in $buckets; do
     echo "  Suspending versioning..."
     aws s3api put-bucket-versioning \
         --bucket "$bucket" \
-        --versioning-configuration Status=Suspended \
-        --profile "$PROFILE" \
-        --region "$REGION"
+        --versioning-configuration Status=Suspended 
 
     # Get all object versions
     echo "  Deleting all object versions and delete markers..."
-    versions=$(aws s3api list-object-versions --bucket "$bucket" --profile "$PROFILE" --region "$REGION")
+    versions=$(aws s3api list-object-versions --bucket "$bucket")
 
     # Delete all versions
     echo "$versions" | jq -c '.Versions[]?' | while read -r version; do
@@ -30,9 +25,7 @@ for bucket in $buckets; do
         aws s3api delete-object \
             --bucket "$bucket" \
             --key "$key" \
-            --version-id "$versionId" \
-            --profile "$PROFILE" \
-            --region "$REGION"
+            --version-id "$versionId"
     done
 
     # Delete all delete markers
@@ -42,14 +35,12 @@ for bucket in $buckets; do
         aws s3api delete-object \
             --bucket "$bucket" \
             --key "$key" \
-            --version-id "$versionId" \
-            --profile "$PROFILE" \
-            --region "$REGION"
+            --version-id "$versionId"
     done
 
     # Delete the bucket
     echo "  Deleting bucket..."
-    aws s3api delete-bucket --bucket "$bucket" --profile "$PROFILE" --region "$REGION"
+    aws s3api delete-bucket --bucket "$bucket"
 
     echo "  Successfully deleted bucket: $bucket"
 done
