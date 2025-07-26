@@ -121,5 +121,5 @@ jobs:
         run: |
           cd ..
           ls -al
-          .\z-delete-cdk-buckets.ps1
+          bash ./z-del-s3.sh
 
